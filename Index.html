@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Прости меня, моя любовь ❤️</title>
+    <!-- Подключение Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Красивые шрифты Google Fonts с поддержкой кириллицы -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Базовые стили и нежный пастельный градиент строго в пределах 100dvh */
+        html, body {
+            height: 100dvh;
+            max-height: 100dvh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffe5ec 45%, #fff8f0 100%);
+            background-size: 200% 200%;
+            animation: gradientFlow 12s ease infinite;
+            position: relative;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .font-handwriting {
+            font-family: 'Caveat', cursive;
+        }
+
+        /* Стеклянная карточка по центру, адаптированная под высоту экрана */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 2px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 16px 40px rgba(244, 63, 94, 0.14), 0 6px 16px rgba(251, 113, 133, 0.08);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-height: calc(100dvh - 24px);
+        }
+
+        /* Анимация парения персонажей */
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(1deg); }
+        }
+        .bear-float {
+            animation: gentleFloat 3.4s ease-in-out infinite;
+        }
+
+        /* Анимация биения сердечка */
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.22); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.16); }
+        }
+        .heart-pulse {
+            transform-origin: center;
+            animation: heartBeat 1.8s ease-in-out infinite;
+        }
+
+        /* Плавное появление блока с извинениями */
+        @keyframes revealMessage {
+            0% { opacity: 0; transform: translateY(10px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-reveal {
+            animation: revealMessage 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* Пульсирующее свечение главной кнопки на обложке */
+        @keyframes btnGlow {
+            0%, 100% { box-shadow: 0 10px 25px rgba(244, 63, 94, 0.35), 0 0 0 0 rgba(244, 63, 94, 0.4); }
+            50% { box-shadow: 0 14px 30px rgba(244, 63, 94, 0.45), 0 0 0 8px rgba(244, 63, 94, 0); }
+        }
+        .btn-glow {
+            animation: btnGlow 2.2s infinite;
+        }
+
+        /* Фоновые парящие сердечки */
+        .bg-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatUp linear forwards;
+            opacity: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(0.6) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.65; }
+            85% { opacity: 0.65; }
+            100% { transform: translateY(-15vh) scale(1.15) rotate(360deg); opacity: 0; }
+        }
+
+        /* Салют из сердечек при нажатии "Да" */
+        .confetti-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease-out;
+        }
+
+        /* Плавный прыжок кнопки "Нет" */
+        #no-btn {
+            transition: left 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        top 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        transform 0.2s ease;
+            touch-action: manipulation;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-3 sm:p-5">
+
+    <!-- Контейнер для фоновых плавающих сердечек -->
+    <div id="bg-hearts-container" aria-hidden="true"></div>
+
+    <!-- Компактная главная карточка открытки, целиком помещающаяся в экран -->
+    <main id="main-card" class="glass-card relative z-10 w-full max-w-sm sm:max-w-md rounded-3xl px-4 py-4 sm:px-7 sm:py-6 text-center flex flex-col justify-between">
+
+        <!-- СЛАЙД 1: Обложка с кнопкой "Открыть моё сердце 💌" -->
+        <section id="slide-1" class="flex flex-col items-center justify-center py-2 sm:py-4 animate-reveal">
+            <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-rose-100/90 text-rose-600 text-xs font-semibold tracking-wide mb-4 border border-rose-200/80 shadow-sm">
+                <span>💌</span>
+                <span>Для самой любимой</span>
+            </div>
+
+            <!-- Милая иллюстрация обнимающихся мишки и панды на обложке -->
+            <div class="bear-float w-40 h-36 sm:w-48 sm:h-44 mb-4">
+                <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-md" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="110" cy="172" rx="78" ry="12" fill="#F43F5E" fill-opacity="0.14"/>
+                    <!-- Коричневый мишка -->
+                    <circle cx="64" cy="56" r="16" fill="#A47148" stroke="#4A2C18" stroke-width="3.5"/>
+                    <circle cx="64" cy="56" r="8" fill="#D4A373"/>
+                    <circle cx="114" cy="56" r="16" fill="#A47148" stroke="#4A2C18" stroke-width="3.5"/>
+                    <circle cx="114" cy="56" r="8" fill="#D4A373"/>
+                    <rect x="48" y="54" width="82" height="112" rx="41" fill="#A47148" stroke="#4A2C18" stroke-width="3.5"/>
+                    <ellipse cx="89" cy="96" rx="17" ry="13" fill="#FAEDCD"/>
+                    <circle cx="73" cy="84" r="4" fill="#4A2C18"/>
+                    <circle cx="105" cy="84" r="4" fill="#4A2C18"/>
+                    <ellipse cx="89" cy="91" rx="5" ry="3.5" fill="#4A2C18"/>
+                    <path d="M83 98Q89 104 95 98" stroke="#4A2C18" stroke-width="2.5" stroke-linecap="round"/>
+                    <ellipse cx="64" cy="93" rx="6.5" ry="4" fill="#FB7185" fill-opacity="0.6"/>
+
+                    <!-- Белая панда -->
+                    <circle cx="114" cy="70" r="15" fill="#3D2C2E"/>
+                    <circle cx="164" cy="70" r="15" fill="#3D2C2E"/>
+                    <rect x="100" y="68" width="78" height="98" rx="39" fill="#FFFFFF" stroke="#3D2C2E" stroke-width="3.5"/>
+                    <ellipse cx="124" cy="100" rx="8" ry="6" transform="rotate(-15 124 100)" fill="#3D2C2E"/>
+                    <circle cx="125" cy="98" r="2.2" fill="#FFFFFF"/>
+                    <ellipse cx="154" cy="100" rx="8" ry="6" transform="rotate(15 154 100)" fill="#3D2C2E"/>
+                    <circle cx="153" cy="98" r="2.2" fill="#FFFFFF"/>
+                    <ellipse cx="139" cy="108" rx="4.5" ry="3" fill="#3D2C2E"/>
+                    <path d="M133 115Q139 121 145 115" stroke="#3D2C2E" stroke-width="2.5" stroke-linecap="round"/>
+                    <ellipse cx="117" cy="111" rx="6.5" ry="3.5" fill="#FDA4AF" fill-opacity="0.75"/>
+                    <ellipse cx="161" cy="111" rx="6.5" ry="3.5" fill="#FDA4AF" fill-opacity="0.75"/>
+
+                    <!-- Объятия -->
+                    <path d="M86 125C101 124 115 130 123 138" stroke="#4A2C18" stroke-width="11" stroke-linecap="round"/>
+                    <path d="M86 125C101 124 115 130 123 138" stroke="#A47148" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M131 135C119 132 108 136 102 142" stroke="#3D2C2E" stroke-width="10" stroke-linecap="round"/>
+                    <path d="M131 135C119 132 108 136 102 142" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
+
+                    <!-- Пульсирующее сердечко сверху -->
+                    <g class="heart-pulse">
+                        <path d="M101 24C101 18.5 108 15 112.5 20.5C117 15 124 18.5 124 24C124 32 112.5 39 112.5 39C112.5 39 101 32 101 24Z" fill="#F43F5E"/>
+                    </g>
+                </svg>
+            </div>
+
+            <h1 class="font-handwriting text-3xl sm:text-4xl font-bold text-rose-600 mb-2 leading-tight px-1">
+                У меня есть кое-что важное для тебя...
+            </h1>
+            <p class="text-gray-600 text-xs sm:text-sm mb-5 max-w-[270px] leading-relaxed">
+                Нажми на кнопку ниже, чтобы прочитать
+            </p>
+
+            <button id="open-heart-btn" type="button"
+                class="btn-glow px-6 py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-sm sm:text-base transition-transform duration-200 active:scale-95 cursor-pointer">
+                Открыть моё сердце 💌
+            </button>
+        </section>
+
+        <!-- СЛАЙД 2 И СЛАЙД 3 (скрыты до нажатия "Открыть моё сердце") -->
+        <div id="slides-content" class="hidden flex-col justify-between">
+            <!-- Верхний блок: бейдж + компактная иллюстрация -->
+            <div>
+                <div class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-rose-100/80 text-rose-600 text-[11px] sm:text-xs font-semibold tracking-wide mb-1.5 border border-rose-200/70">
+                    <span>💌</span>
+                    <span>Для самой любимой</span>
+                </div>
+
+                <!-- Компактная иллюстрация мишки и панды -->
+                <div class="flex justify-center mb-1.5">
+                    <!-- Состояние для Слайд 2: Грустный/виноватый мишка с пандой -->
+                    <div id="illustration-sad" class="bear-float w-28 h-[92px] sm:w-36 sm:h-[116px]">
+                        <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-sm" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="110" cy="172" rx="76" ry="11" fill="#F43F5E" fill-opacity="0.12"/>
+                            <!-- Коричневый мишка -->
+                            <circle cx="62" cy="54" r="16" fill="#A47148" stroke="#4A2C18" stroke-width="3.5"/>
+                            <circle cx="62" cy="54" r="8" fill="#D4A373"/>
+                            <circle cx="114" cy="54" r="16" fill="#A47148" stroke="#4A2C18" stroke-width="3.5"/>
+                            <circle cx="114" cy="54" r="8" fill="#D4A373"/>
+                            <rect x="46" y="52" width="84" height="114" rx="42" fill="#A47148" stroke="#4A2C18" stroke-width="3.5"/>
+                            <!-- Мордочка мишки -->
+                            <ellipse cx="88" cy="95" rx="18" ry="14" fill="#FAEDCD"/>
+                            <circle cx="72" cy="84" r="4" fill="#4A2C18"/>
+                            <circle cx="104" cy="84" r="4" fill="#4A2C18"/>
+                            <ellipse cx="88" cy="91" rx="5" ry="3.5" fill="#4A2C18"/>
+                            <path d="M82 99Q88 103 94 99" stroke="#4A2C18" stroke-width="2.5" stroke-linecap="round"/>
+                            <ellipse cx="63" cy="93" rx="6" ry="4" fill="#FB7185" fill-opacity="0.55"/>
+                            <ellipse cx="113" cy="93" rx="6" ry="4" fill="#FB7185" fill-opacity="0.55"/>
+
+                            <!-- Белая панда -->
+                            <circle cx="112" cy="74" r="14" fill="#3D2C2E"/>
+                            <circle cx="164" cy="74" r="14" fill="#3D2C2E"/>
+                            <rect x="98" y="72" width="80" height="96" rx="40" fill="#FFFFFF" stroke="#3D2C2E" stroke-width="3.5"/>
+                            <ellipse cx="122" cy="105" rx="8" ry="6" transform="rotate(-15 122 105)" fill="#3D2C2E"/>
+                            <circle cx="123" cy="103" r="2.2" fill="#FFFFFF"/>
+                            <ellipse cx="154" cy="105" rx="8" ry="6" transform="rotate(15 154 105)" fill="#3D2C2E"/>
+                            <circle cx="153" cy="103" r="2.2" fill="#FFFFFF"/>
+                            <!-- Слёзка -->
+                            <path d="M114 114C114 114 110 120 110 123C110 125.2 111.8 127 114 127C116.2 127 118 125.2 118 123C118 120 114 114 114 114Z" fill="#60A5FA"/>
+                            <ellipse cx="138" cy="113" rx="4.5" ry="3" fill="#3D2C2E"/>
+                            <path d="M132 123Q138 119 144 123" stroke="#3D2C2E" stroke-width="2.5" stroke-linecap="round"/>
+                            <ellipse cx="115" cy="116" rx="6" ry="3.5" fill="#FDA4AF" fill-opacity="0.7"/>
+                            <ellipse cx="161" cy="116" rx="6" ry="3.5" fill="#FDA4AF" fill-opacity="0.7"/>
+                            <!-- Обнимающая лапка -->
+                            <path d="M84 126C98 126 112 132 118 140" stroke="#4A2C18" stroke-width="11" stroke-linecap="round"/>
+                            <path d="M84 126C98 126 112 132 118 140" stroke="#A47148" stroke-width="6" stroke-linecap="round"/>
+                            <g class="heart-pulse">
+                                <path d="M148 34C148 28.5 155 25 159.5 30.5C164 25 171 28.5 171 34C171 42 159.5 49 159.5 49C159.5 49 148 42 148 34Z" fill="#F43F5E"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <!-- Состояние для Слайд 3: Счастливые обнимашки после нажатия "Да" -->
+                    <div id="illustration-happy" class="hidden bear-float w-28 h-[88px] sm:w-36 sm:h-[112px]">
+                        <svg viewBox="0 0 220 190" class="w-full h-full drop-shadow-sm" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="110" cy="172" rx="80" ry="11" fill="#F43F5E" fill-opacity="0.16"/>
+                            <circle cx="64" cy="56" r="16" fill="#A47148" stroke="#4A2C18" stroke-width="3.5"/>
+                            <circle cx="114" cy="56" r="16" fill="#A47148" stroke="#4A2C18" stroke-width="3.5"/>
+                            <rect x="48" y="54" width="82" height="112" rx="41" fill="#A47148" stroke="#4A2C18" stroke-width="3.5"/>
+                            <path d="M68 85Q74 78 80 85" stroke="#4A2C18" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M98 85Q104 78 110 85" stroke="#4A2C18" stroke-width="3" stroke-linecap="round"/>
+                            <ellipse cx="89" cy="96" rx="17" ry="13" fill="#FAEDCD"/>
+                            <ellipse cx="89" cy="91" rx="5" ry="3.5" fill="#4A2C18"/>
+                            <path d="M82 98Q89 106 96 98" stroke="#4A2C18" stroke-width="2.5" stroke-linecap="round"/>
+                            <ellipse cx="64" cy="94" rx="7" ry="4.5" fill="#FB7185" fill-opacity="0.7"/>
+
+                            <circle cx="114" cy="68" r="15" fill="#3D2C2E"/>
+                            <circle cx="164" cy="68" r="15" fill="#3D2C2E"/>
+                            <rect x="100" y="66" width="78" height="100" rx="39" fill="#FFFFFF" stroke="#3D2C2E" stroke-width="3.5"/>
+                            <path d="M120 98Q126 91 132 98" stroke="#3D2C2E" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M148 98Q154 91 160 98" stroke="#3D2C2E" stroke-width="3" stroke-linecap="round"/>
+                            <ellipse cx="140" cy="106" rx="4.5" ry="3" fill="#3D2C2E"/>
+                            <path d="M133 113Q140 122 147 113" fill="#FB7185" stroke="#3D2C2E" stroke-width="2.2" stroke-linecap="round"/>
+                            <ellipse cx="118" cy="109" rx="7" ry="4" fill="#FDA4AF" fill-opacity="0.85"/>
+                            <ellipse cx="162" cy="109" rx="7" ry="4" fill="#FDA4AF" fill-opacity="0.85"/>
+
+                            <path d="M86 125C102 124 116 130 124 138" stroke="#4A2C18" stroke-width="11" stroke-linecap="round"/>
+                            <path d="M86 125C102 124 116 130 124 138" stroke="#A47148" stroke-width="6" stroke-linecap="round"/>
+                            <path d="M132 135C120 132 108 136 102 142" stroke="#3D2C2E" stroke-width="10" stroke-linecap="round"/>
+                            <path d="M132 135C120 132 108 136 102 142" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
+
+                            <g class="heart-pulse">
+                                <path d="M98 22C98 16.5 105 13 109.5 18.5C114 13 121 16.5 121 22C121 30 109.5 37 109.5 37C109.5 37 98 30 98 22Z" fill="#F43F5E"/>
+                                <path d="M158 34C158 30 163 27.5 166.5 31.5C170 27.5 175 30 175 34C175 40 166.5 45 166.5 45C166.5 45 158 40 158 34Z" fill="#FB7185"/>
+                                <path d="M44 36C44 32 49 29.5 52.5 33.5C56 29.5 61 32 61 36C61 42 52.5 47 52.5 47C52.5 47 44 42 44 36Z" fill="#FB7185"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Заголовок признания -->
+                <h2 id="main-slide-title" class="font-handwriting text-2xl sm:text-3xl font-bold text-rose-600 mb-1.5 leading-tight">
+                    Прости, пожалуйста, любимая ❤️
+                </h2>
+            </div>
+
+            <!-- СЛАЙД 2: Блок с извинениями и кнопками -->
+            <div id="apology-section" class="animate-reveal">
+                <div class="px-3 py-2 sm:p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200/80 text-rose-950 text-[11.5px] sm:text-xs leading-[1.4] mb-2 shadow-inner space-y-1">
+                    <p>
+                        Прости, пожалуйста, любимая. Я безумно сильно люблю тебя. Я не хочу тебя терять. Давай вместе пройдем все трудности, потому что мы любим друг друга. Мы созданы друг для друга.
+                    </p>
+                    <p class="font-medium text-rose-900">
+                        Ты моё всё, мой мир, моя вселенная, моя любимая, моя любовь, моё счастье. Спасибо тебе за всё, жанм. Безумно сильно люблю тебя, моя бубу. 🥺❤️
+                    </p>
+                </div>
+
+                <!-- Вопрос и подсказка при попытке нажать "Нет" -->
+                <h3 id="question-title" class="text-[15px] sm:text-lg font-bold text-gray-800 mb-0.5">
+                    Ты простишь меня?
+                </h3>
+                <p id="plea-subtitle" class="text-[11px] sm:text-xs text-rose-500 font-medium min-h-[15px] mb-2">
+                    Выбери ответ ниже 💕
+                </p>
+
+                <!-- Контейнер кнопок Да / Нет -->
+                <div id="buttons-area" class="flex items-center justify-center gap-3 min-h-[42px] relative">
+                    <button id="yes-btn" type="button"
+                        class="z-20 px-5 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/30 transition-all duration-300 cursor-pointer active:scale-95">
+                        Да, прощаю ❤️
+                    </button>
+
+                    <button id="no-btn" type="button"
+                        class="z-30 px-4 py-2 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold text-xs sm:text-sm border border-gray-200 shadow-sm cursor-pointer">
+                        Нет 🙈
+                    </button>
+                </div>
+            </div>
+
+            <!-- СЛАЙД 3: Финальный экран после нажатия "Да, прощаю ❤️" -->
+            <div id="final-section" class="hidden animate-reveal mt-0.5">
+                <div class="px-3 py-2.5 sm:p-4 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/25">
+                    <h3 class="font-handwriting text-xl sm:text-2xl font-bold mb-1 leading-none">
+                        Спасибо, моя бубу! ❤️
+                    </h3>
+                    <div class="text-[10.5px] sm:text-xs text-rose-50 leading-[1.32] space-y-1">
+                        <p>
+                            Ты моё счастье, моё всё любимое. Я всегда буду рядом, я всегда буду любить тебя, я никогда не уйду, я никогда не изменю. Я буду всегда делать тебя счастливой, стараться сделать всё. Я буду делать ради тебя всё, моя любимая.
+                        </p>
+                        <p class="font-medium text-white">
+                            Я безумно сильно счастлив, что ты моя девушка. Спасибо тебе за всё. За то, что рядом, за то, что поддерживаешь, за то, что любишь даже в самые трудные дни. Спасибо тебе большое, жанмм. Ты моё всё. Я безумно сильно люблю тебя. 💑✨
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const bgContainer = document.getElementById('bg-hearts-container');
+            const slide1 = document.getElementById('slide-1');
+            const slidesContent = document.getElementById('slides-content');
+            const openHeartBtn = document.getElementById('open-heart-btn');
+            const apologySection = document.getElementById('apology-section');
+            const finalSection = document.getElementById('final-section');
+            const yesBtn = document.getElementById('yes-btn');
+            const noBtn = document.getElementById('no-btn');
+            const pleaSubtitle = document.getElementById('plea-subtitle');
+            const illustrationSad = document.getElementById('illustration-sad');
+            const illustrationHappy = document.getElementById('illustration-happy');
+            const mainSlideTitle = document.getElementById('main-slide-title');
+
+            // 1. Фоновые плавающие сердечки
+            const heartSymbols = ['❤️', '💖', '💕', '💗', '💓', '🌸'];
+            function spawnBgHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'bg-heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 14 + 12) + 'px';
+                const duration = Math.random() * 5 + 6;
+                heart.style.animationDuration = duration + 's';
+                bgContainer.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+
+            for (let i = 0; i < 8; i++) {
+                setTimeout(spawnBgHeart, i * 400);
+            }
+            setInterval(spawnBgHeart, 850);
+
+            // 2. Салют из сердечек
+            function burstHearts(x, y, count = 28) {
+                const icons = ['❤️', '💖', '💕', '💗', '💓', '✨', '🥰'];
+                for (let i = 0; i < count; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'confetti-heart';
+                    el.textContent = icons[Math.floor(Math.random() * icons.length)];
+                    el.style.left = x + 'px';
+                    el.style.top = y + 'px';
+                    el.style.fontSize = (Math.random() * 16 + 14) + 'px';
+                    document.body.appendChild(el);
+
+                    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+                    const velocity = Math.random() * 150 + 60;
+                    const tx = Math.cos(angle) * velocity;
+                    const ty = Math.sin(angle) * velocity - 35;
+                    const rot = (Math.random() - 0.5) * 360;
+
+                    requestAnimationFrame(() => {
+                        el.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(1.2)`;
+                        el.style.opacity = '0';
+                    });
+
+                    setTimeout(() => el.remove(), 1250);
+                }
+            }
+
+            // Переход со Слайда 1 (Обложка) на Слайд 2 (Извинения и вопрос)
+            openHeartBtn.addEventListener('click', () => {
+                const rect = openHeartBtn.getBoundingClientRect();
+                burstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2, 18);
+
+                slide1.classList.add('hidden');
+                slidesContent.classList.remove('hidden');
+                slidesContent.classList.add('flex', 'animate-reveal');
+            });
+
+            // 3. Логика убегающей кнопки "Нет" в границах экрана
+            const pleadingPhrases = [
+                'Жанм, ты уверена? 🥺',
+                'Ну пожалуйста, бубу... 💔',
+                'Жанм, не нажимай сюда! 😭',
+                'Бубу, я всё исправлю! 🌹',
+                'Только Да, жанм! ❤️',
+                'Ну прости меня, моя бубу... 🧸',
+                'Жанм, моё сердечко не выдержит 💔'
+            ];
+            let noAttempts = 0;
+            let isTeleported = false;
+
+            function teleportNoButton(e) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                if (!isTeleported) {
+                    const rect = noBtn.getBoundingClientRect();
+                    noBtn.style.position = 'fixed';
+                    noBtn.style.left = rect.left + 'px';
+                    noBtn.style.top = rect.top + 'px';
+                    noBtn.style.margin = '0';
+                    document.body.appendChild(noBtn);
+                    isTeleported = true;
+                }
+
+                const btnWidth = noBtn.offsetWidth || 90;
+                const btnHeight = noBtn.offsetHeight || 40;
+                const margin = 16;
+
+                const maxX = Math.max(margin, window.innerWidth - btnWidth - margin);
+                const maxY = Math.max(margin, window.innerHeight - btnHeight - margin);
+
+                const yesRect = yesBtn.getBoundingClientRect();
+                let newX, newY;
+                let safetyCounter = 0;
+
+                do {
+                    newX = Math.floor(Math.random() * (maxX - margin + 1)) + margin;
+                    newY = Math.floor(Math.random() * (maxY - margin + 1)) + margin;
+                    safetyCounter++;
+
+                    const overlapsYes =
+                        newX + btnWidth + 10 > yesRect.left &&
+                        newX - 10 < yesRect.right &&
+                        newY + btnHeight + 10 > yesRect.top &&
+                        newY - 10 < yesRect.bottom;
+
+                    const currentLeft = parseFloat(noBtn.style.left) || 0;
+                    const currentTop = parseFloat(noBtn.style.top) || 0;
+                    const distance = Math.hypot(newX - currentLeft, newY - currentTop);
+
+                    if (!overlapsYes && distance > 75) {
+                        break;
+                    }
+                } while (safetyCounter < 25);
+
+                noBtn.style.left = newX + 'px';
+                noBtn.style.top = newY + 'px';
+
+                pleaSubtitle.textContent = pleadingPhrases[noAttempts % pleadingPhrases.length];
+                noAttempts++;
+
+                const yesScale = Math.min(1 + noAttempts * 0.07, 1.55);
+                yesBtn.style.transform = `scale(${yesScale})`;
+            }
+
+            noBtn.addEventListener('mouseenter', teleportNoButton);
+            noBtn.addEventListener('touchstart', teleportNoButton, { passive: false });
+            noBtn.addEventListener('click', teleportNoButton);
+
+            window.addEventListener('resize', () => {
+                if (!isTeleported || noBtn.style.display === 'none') return;
+                const btnWidth = noBtn.offsetWidth || 90;
+                const btnHeight = noBtn.offsetHeight || 40;
+                const currentX = parseFloat(noBtn.style.left) || 16;
+                const currentY = parseFloat(noBtn.style.top) || 16;
+                noBtn.style.left = Math.min(currentX, Math.max(16, window.innerWidth - btnWidth - 16)) + 'px';
+                noBtn.style.top = Math.min(currentY, Math.max(16, window.innerHeight - btnHeight - 16)) + 'px';
+            });
+
+            // 4. Переход на Слайд 3 после нажатия "Да, прощаю ❤️"
+            yesBtn.addEventListener('click', () => {
+                noBtn.style.display = 'none';
+                apologySection.classList.add('hidden');
+
+                illustrationSad.classList.add('hidden');
+                illustrationHappy.classList.remove('hidden');
+
+                mainSlideTitle.textContent = 'Спасибо большое, жанм ❤️';
+
+                finalSection.classList.remove('hidden');
+
+                const rect = yesBtn.getBoundingClientRect();
+                burstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2, 32);
+                setTimeout(() => burstHearts(window.innerWidth * 0.3, window.innerHeight * 0.35, 22), 250);
+                setTimeout(() => burstHearts(window.innerWidth * 0.7, window.innerHeight * 0.35, 22), 450);
+            });
+        });
+    </script>
+</body>
+</html>
